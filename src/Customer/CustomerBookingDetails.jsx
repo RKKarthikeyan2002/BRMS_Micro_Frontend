@@ -12,7 +12,24 @@ function CustomerBookingDetails() {
     const [modalContent, setModalContent] = useState('');
     const [contentType, setContentType] = useState('');
     const [status, setStatus] = useState(booking?.status || '');
-    const [advanceStatus, setAdvanceStatus] = useState(''); // New state to track advance status
+    const [advanceStatus, setAdvanceStatus] = useState('');
+    const [paymentDetails, setPaymentDetails] = useState([]); // State to store payment details
+
+    useEffect(() => {
+        if (booking) {
+            // Fetch payment details when booking is available
+            const fetchPaymentDetails = async () => {
+                try {
+                    const response = await axios.get(`http://localhost:8080/payments/all/booking/${booking.id}`);
+                    setPaymentDetails(response.data);
+                } catch (error) {
+                    console.error('Error fetching payment details:', error);
+                }
+            };
+
+            fetchPaymentDetails();
+        }
+    }, [booking]);
 
     if (!booking) {
         return <p>No booking information available.</p>;
@@ -56,7 +73,7 @@ function CustomerBookingDetails() {
         var rzp1 = new window.Razorpay(options);
         rzp1.open();
     };
-    
+
     const savePaymentInfo = async (paymentId) => {
         try {
             const formData = new FormData();
@@ -76,7 +93,7 @@ function CustomerBookingDetails() {
             formData1.append('status', "paid");
             await axios.patch(`http://localhost:8080/booking/advanceStatus/${booking.id}`, formData1);
             
-            navigate("/")
+            navigate("/");
         } catch (error) {
             console.error('Error saving payment info:', error);
         }
@@ -101,10 +118,10 @@ function CustomerBookingDetails() {
                                 </Col>
                                 <Col md={6}>
                                     <h5>{booking.bike.number}</h5>
-                                    <h5>{booking.bike.brand}</h5>
-                                    <h5>{booking.bike.model}</h5>
+                                    <h5>{booking.bike.brand} {booking.bike.model}</h5>
                                     <h5>{booking.name}</h5>
                                     <p><strong>Age:</strong> {booking.age}</p>
+                                    <p><strong>Phone:</strong> {booking.phone}</p>
                                     <p><strong>From Date:</strong> {new Date(booking.fromDate).toLocaleDateString()}</p>
                                     <p><strong>To Date:</strong> {new Date(booking.toDate).toLocaleDateString()}</p>
                                     <p><strong>Status:</strong> {status}</p>
@@ -127,6 +144,30 @@ function CustomerBookingDetails() {
                                         )}
                                     </div>
                                 </Col>
+                            </Row>
+                            <Row className="mt-4">
+                                {paymentDetails.length > 0 ? (
+                                    paymentDetails.map((payment, index) => (
+                                        <Col key={index} md={4} className="mb-3">
+                                            <Card>
+                                                <Card.Header as="h5">Payment Details</Card.Header>
+                                                <Card.Body>
+                                                    <p><strong>Payment Type:</strong> {payment.name}</p>
+                                                    <p><strong>Amount:</strong> {payment.amount}</p>
+                                                    <p><strong>Status:</strong> Paid</p>
+                                                </Card.Body>
+                                            </Card>
+                                        </Col>
+                                    ))
+                                ) : (
+                                    <Col>
+                                        <Card>
+                                            <Card.Body>
+                                                <p>No payment details available.</p>
+                                            </Card.Body>
+                                        </Card>
+                                    </Col>
+                                )}
                             </Row>
                         </Card.Body>
                     </Card>

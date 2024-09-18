@@ -25,7 +25,7 @@ function BookBike() {
   useEffect(() => {
     const customerId = sessionStorage.getItem('customerId');
     if (!customerId) {
-      navigate('/login');
+      navigate('/');
       return;
     }
 
@@ -155,19 +155,18 @@ function BookBike() {
                         <strong>Model:</strong> {bike.model}<br />
                         <strong>Number:</strong> {bike.number}<br />
                         <strong>Year:</strong> {bike.year}<br />
+                        <strong>Type:</strong> {bike.bikeType.name}<br />
+                        
                       </Card.Text>
                       <strong style={{ fontSize: '1.5rem', color: '#28a745' }}>Price Per Day:</strong><br />
                       <span style={{ fontSize: '1.25rem' }}>₹ {bike.rentalRate ? bike.rentalRate.ratePerDay : 'Not Available'}</span><br/>
                     </Col>
                     <Col md={6}>
                       <Card.Text>
-                        <strong>Description:</strong> {bike.description}<br />
-                        <strong>Mileage:</strong> {bike.km}<br />
-                        <strong>Rating:</strong> {bike.rating}<br />
+                        <strong>Kilo Meter:</strong> {bike.km}<br />
                         <strong>Status:</strong> {bike.status}<br/>
+                        <strong>description:</strong> {bike.bikeType.description}<br />
                       </Card.Text>
-                      <strong style={{ fontSize: '1.5rem', color: '#007bff' }}>Reviews:</strong><br />
-                      <span style={{ fontSize: '1.25rem' }}>{bike.rating} ⭐</span>
                     </Col>
                   </Row>
                 </Col>

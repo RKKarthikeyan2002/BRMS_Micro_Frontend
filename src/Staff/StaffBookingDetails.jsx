@@ -5,7 +5,7 @@ import axios from 'axios';
 
 function StaffBookingDetails() {
     const location = useLocation();
-    const { booking } = location.state || {};
+    const [booking, setBooking] = useState(location.state?.booking || {});
     const navigate = useNavigate();
 
     const [showModal, setShowModal] = useState(false);
@@ -53,18 +53,14 @@ function StaffBookingDetails() {
             const formData = new FormData();
             formData.append('paymentId', paymentId);
             if (booking.advanceStatus !== 'paid') {
-                formData.append('name', 'Balance amount');
-            } else {
                 formData.append('name', 'Advance amount');
+            } else {
+                formData.append('name', 'Balance amount');
             }
-            formData.append('amount', booking.advance);
+            formData.append('amount', booking.totalAmount / 2);
             formData.append('bookingId', booking.id);
 
-            const response = await axios.post('http://localhost:8080/payments/save', formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data' // Set the content type for FormData
-                }
-            });
+            const response = await axios.post('http://localhost:8080/payments/save', formData);
             console.log('Payment info saved:', response.data);
 
             const formData1 = new FormData();
@@ -84,10 +80,20 @@ function StaffBookingDetails() {
         }
     };
 
-    const updateBookingStatus = (newStatus) => {
+    const updateBookingStatus = async (newStatus) => {
         const formData = new FormData();
         formData.append('status', newStatus);
-        axios.patch(`http://localhost:8080/booking/${booking.id}`, formData)
+        if(newStatus === 'Rented') {
+            const formData = new FormData();
+            formData.append('status', "Rented");
+            await axios.patch(`http://localhost:8080/bike/${booking.bike.id}`, formData)
+        }
+        else {
+            const formData = new FormData();
+            formData.append('status', "Available");
+            await axios.patch(`http://localhost:8080/bike/${booking.bike.id}`, formData)
+        }
+        await axios.patch(`http://localhost:8080/booking/${booking.id}`, formData)
             .then(response => {
                 setStatus(newStatus);
                 navigate("/staffHome");
@@ -109,6 +115,8 @@ function StaffBookingDetails() {
 
     const handleCloseModal = () => setShowModal(false);
 
+    const handleShowDamageModal = () => setShowDamageModal(true);
+
     const handleAddDamage = () => {
         const formData = new FormData();
         formData.append('amount', damageAmount);
@@ -123,12 +131,17 @@ function StaffBookingDetails() {
             const bookingData = new FormData();
             bookingData.append('totalAmount', updatedTotalAmount);
 
-            return axios.patch(`http://localhost:8080/booking/addDamageAmount/${booking.id}`, bookingData);
+            axios.patch(`http://localhost:8080/booking/addDamageAmount/${booking.id}`, bookingData);
+
+            setBooking(prevBooking => ({
+                ...prevBooking,
+                totalAmount: updatedTotalAmount
+            }));
         })
         .then(() => {
             console.log('Damage added and total amount updated');
             setShowDamageModal(false);
-            navigate(0); 
+            navigate('/staffbookingdetails', { state: { booking } })
         })
         .catch(error => {
             console.error('Error adding damage:', error);
@@ -191,13 +204,22 @@ function StaffBookingDetails() {
                                                     Mark as Rented
                                                 </Button>
                                             ) : (
-                                                <Button
-                                                    variant="success"
-                                                    className="me-2"
-                                                    onClick={handlePay}
-                                                >
-                                                    Pay Balance Amount
-                                                </Button>
+                                                <>
+                                                    <Button
+                                                        variant="success"
+                                                        className="me-2"
+                                                        onClick={handlePay}
+                                                    >
+                                                        Pay Balance Amount
+                                                    </Button>
+                                                    <Button
+                                                        variant="success"
+                                                        className="me-2"
+                                                        onClick={handleShowDamageModal}
+                                                    >
+                                                        Add damage
+                                                    </Button>
+                                                </>
                                             )
                                         )}
                                     </div>

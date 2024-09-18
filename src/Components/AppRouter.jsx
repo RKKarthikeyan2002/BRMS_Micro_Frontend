@@ -25,16 +25,22 @@ import StaffBookingDetails from '../Staff/StaffBookingDetails';
 import CustomerProfile from '../Customer/CustomerProfile';
 import AdminProfile from '../Admin/AdminProfile';
 import StaffProfile from '../Staff/StaffProfile';
+import OwnerBikeDetails from '../BikeOwner/OwnerBikeDetails';
+import Footer from './Footer';
+import TeamSection from './TeamSection';
+import ContactUs from './ContactUs';
+import Hero from './Hero';
+import AdminBikeApplication from '../Admin/AdminBikeApplication';
 
 function AppRouter() {
   return (
     <div>
         <Router>
             <Routes>
-                <Route path="/" element={<> <Navbar/> <Bikes /> </>} />
+                <Route path="/" element={<> <Navbar/> <Hero /> <Bikes /> <TeamSection /> <Footer /> </>} />
                 <Route path="/login" element={<> <Navbar /> <Login /> </>} />
                 <Route path="/signup" element={<> <Navbar /> <SignUp /> </>} />
-                <Route path="/bikes" element={<> <Navbar /> <Bikes /> </>} />
+                <Route path="/contactUs" element={<> <Navbar /> <ContactUs /> </>} />
 
                 
                 <Route path="/mybikes" element={<> <Navbar /> <MyBikes /> </>} />
@@ -45,6 +51,7 @@ function AppRouter() {
                 <Route path="/customerBookings" element={<> <Navbar /> <MyBookings /> </>} />
                 <Route path="/customerBookingDetails" element={<> <Navbar /> <CustomerBookingDetails /> </>} />
                 <Route path="/customerProfile" element={<> <Navbar /> <CustomerProfile /> </>} />
+                <Route path="/ownerBike" element={<> <Navbar /> <OwnerBikeDetails /> </>} />
 
 
                 <Route path="/adminHome" element={<> <AdminNavbar /> <AllBikes /> </>} />
@@ -54,6 +61,7 @@ function AppRouter() {
                 <Route path="/adminBookingRequests" element={<> <AdminNavbar /> <BookingRequest /> </>} />
                 <Route path="/adminBookingDetails" element={<> <AdminNavbar /> <BookingDetails /> </>} />
                 <Route path="/adminProfile" element={<> <AdminNavbar /> <AdminProfile /> </>} />
+                <Route path="/adminBikeAdd" element={<> <AdminNavbar /> <AdminBikeApplication /> </>} />
 
 
                 <Route path="/staffHome" element={<> <StaffNavbar /> <ViewAllBooking /> </>} />

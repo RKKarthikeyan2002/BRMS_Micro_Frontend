@@ -7,6 +7,7 @@ import { parseISO, eachDayOfInterval, differenceInDays, isWeekend } from 'date-f
 import axios from 'axios';
 import { FaUser, FaCalendarAlt, FaPhone, FaImage, FaMoneyBillWave } from 'react-icons/fa';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import Swal from 'sweetalert2';
 
 function BookingForm() {
   const location = useLocation();
@@ -28,11 +29,13 @@ function BookingForm() {
 
   const today = new Date();
   const ratePerDay = bike?.rentalRate?.ratePerDay || 50;
-  const bikeEndDate = bike?.toDate ? new Date(bike.toDate) : null;
+  const bikeEndDate = bike?.toDate ? new Date(bike.toDate).setDate(new Date(bike.toDate).getDate() - 1) : null;
 
   useEffect(() => {
     const fetchCustomerData = async () => {
       const id = sessionStorage.getItem("customerId");
+      console.log(bike.fromDate);
+      
       if (id) {
         try {
           const response = await axios.get(`http://localhost:8080/customer/${id}`);
@@ -79,17 +82,17 @@ function BookingForm() {
       if (startDate <= date && date <= bikeEndDate) {
         if (isDateBlocked(startDate, date)) {
           setError('Selected dates overlap with existing bookings.');
-          setTotalAmount(0); // Reset total amount on error
+          setTotalAmount(0);
         } else {
           const range = eachDayOfInterval({ start: startDate, end: date });
           setDates(range);
-          const numberOfDays = differenceInDays(date, startDate) + 1; // +1 to include both start and end days
+          const numberOfDays = differenceInDays(date, startDate) + 1; 
           setTotalAmount(numberOfDays * ratePerDay);
-          setError(''); // Clear any previous errors
+          setError(''); 
         }
       } else if (date > bikeEndDate) {
         setError('End date must be on or before the bike’s available end date.');
-        setTotalAmount(0); // Reset total amount on error
+        setTotalAmount(0); 
       } else {
         setError('End date must be after start date.');
         setTotalAmount(0); // Reset total amount on error
@@ -102,7 +105,7 @@ function BookingForm() {
       const bookingStart = new Date(booking.fromDate);
       const bookingEnd = new Date(booking.toDate);
 
-      if (startDate <= bookingEnd && endDate >= bookingStart) {
+      if (startDate <= bookingEnd && endDate >= bookingStart ) {
         return true;
       }
     }
@@ -115,7 +118,7 @@ function BookingForm() {
       const bookingEnd = new Date(booking.toDate);
       const dayBeforeBookingStart = new Date(bookingStart);
       dayBeforeBookingStart.setDate(dayBeforeBookingStart.getDate());
-      return (date > bookingStart && date <= bookingEnd) || date.toDateString() === dayBeforeBookingStart.toDateString();
+      return (date >= bookingStart && date <= bookingEnd) || date.toDateString() === dayBeforeBookingStart.toDateString();
     });
   };
 
@@ -164,6 +167,10 @@ function BookingForm() {
     try {
       await axios.post('http://localhost:8080/booking/addBooking', formData);
       setSuccess('Booking successful!');
+      await Swal.fire({
+        title: "Booking Application Submitted",
+        icon: "success"
+      });
       navigate('/');
     } catch (err) {
       setError('Failed to submit the booking.');
@@ -266,7 +273,7 @@ function BookingForm() {
                 />
               </Form.Group>
               <div className="mb-3">
-                <h4>Total Amount: ${totalAmount.toFixed(2)}</h4>
+                <h4>Total Amount: {totalAmount.toFixed(2)}</h4>
               </div>
               <Button variant="primary" type="submit" className="w-100">
                 Submit Booking

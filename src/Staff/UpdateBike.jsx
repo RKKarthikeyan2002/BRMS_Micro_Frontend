@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Container, Row, Col, Card, Button, Modal, Form } from 'react-bootstrap';
 import axios from 'axios';
+import { FaEye, FaUpload, FaEdit } from 'react-icons/fa';
+import { AiOutlineClose } from 'react-icons/ai';
+import 'bootstrap/dist/css/bootstrap.min.css'; // Ensure Bootstrap CSS is imported
+import Swal from 'sweetalert2';
 
 function UpdateBike() {
     const location = useLocation();
@@ -18,13 +22,11 @@ function UpdateBike() {
         return <p>No bike information available.</p>;
     }
 
-    // Handle video file change
     const handleVideoChange = (event) => {
         setVideoFile(event.target.files[0]);
     };
 
-    // Upload video file
-    const updateBike = () => {
+    const updateBike = async () => {
         if (!videoFile) {
             alert("Please select a video file to upload.");
             return;
@@ -32,14 +34,18 @@ function UpdateBike() {
 
         const formData = new FormData();
         formData.append('video', videoFile);
-        formData.append('ratePerHour', rentalRate.ratePerHour)
+        formData.append('ratePerHour', rentalRate.ratePerHour);
         formData.append('ratePerDay', rentalRate.ratePerDay);
         formData.append('bikeId', bike.id);
 
-        axios.post(`http://localhost:8080/bike/updateBike`, formData)
-            .then(response => {
-                alert("Bike Updated successfully.");
-                navigate("/staffHome")
+        await axios.post(`http://localhost:8080/bike/updateBike`, formData)
+            .then(async response => {
+                await Swal.fire({
+                    title: "Bike Status Updated!",
+                    icon: "success",
+                    confirmButtonColor: "#28a745"
+                });
+                navigate("/staffHome");
             })
             .catch(error => {
                 console.error("There was an error uploading the video!", error);
@@ -60,60 +66,58 @@ function UpdateBike() {
             alert("No document available.");
             return;
         }
-        const mimeType = 'application/pdf';
+        const mimeType = documentType === 'aadhar' ? 'application/pdf' : 'image/jpeg';
         const src = `data:${mimeType};base64,${documentData}`;
-        setModalContent({
-            type: mimeType,
-            src
-        });
+        setModalContent({ type: mimeType, src });
         setShowModal(true);
     };
 
     const handleCloseModal = () => setShowModal(false);
 
     return (
-        <Container>
-            <Row className="mt-4">
-                <Col>
-                    <Card>
-                        <Card.Header as="h5">Bike Details</Card.Header>
+        <Container fluid className="p-4">
+            <Row className="justify-content-center">
+                <Col md={8}>
+                    <Card className="shadow-lg border-primary w-200">
+                        <Card.Header as="h4" className="bg-primary text-white">
+                            <FaEdit className="me-2" /> Update Bike Details
+                        </Card.Header>
                         <Card.Body>
-                            <Row>
-                                <Col md={4}>
+                            <Row className="align-items-center">
+                                <Col md={4} className="text-center">
                                     {bike.image && (
                                         <img
                                             src={`data:image/jpeg;base64,${bike.image}`}
                                             alt={bike.model}
-                                            style={{ width: '100%', height: 'auto' }}
+                                            className="img-fluid rounded"
                                         />
                                     )}
                                 </Col>
                                 <Col md={8}>
-                                    <h5>{bike.brand} {bike.model}</h5>
+                                    <h4 className="text-primary">{bike.brand} {bike.model}</h4>
                                     <p><strong>Number:</strong> {bike.number}</p>
                                     <p><strong>Year:</strong> {bike.year}</p>
                                     <p><strong>KM:</strong> {bike.km}</p>
-                                    <p><strong>Rating:</strong> {bike.rating}</p>
                                     <p><strong>Status:</strong> {status}</p>
 
                                     <div className="mt-3">
                                         <Button
                                             variant="info"
                                             onClick={() => handleViewDocument('aadhar')}
-                                            className="me-2"
+                                            className=" align-items-center me-2"
                                         >
-                                            View Aadhar
+                                            <FaEye className="me-2" /> View Aadhar
                                         </Button>
                                         <Button
                                             variant="info"
                                             onClick={() => handleViewDocument('rc')}
+                                            className=" align-items-center"
                                         >
-                                            View RC
+                                            <FaEye className="me-2" /> View RC
                                         </Button>
                                     </div>
 
-                                    {/* File input for video upload */}
-                                    <Form.Group className="mt-3">
+                                    <Form.Group className="mt-4">
                                         <Form.Label>Upload Bike Video</Form.Label>
                                         <Form.Control
                                             type="file"
@@ -122,7 +126,6 @@ function UpdateBike() {
                                         />
                                     </Form.Group>
 
-                                    {/* Rental Rate Form */}
                                     <Form className="mt-4">
                                         <Form.Group controlId="ratePerHour">
                                             <Form.Label>Rate Per Hour</Form.Label>
@@ -131,6 +134,7 @@ function UpdateBike() {
                                                 name="ratePerHour"
                                                 value={rentalRate.ratePerHour}
                                                 onChange={handleRentalRateChange}
+                                                placeholder="Enter rate per hour"
                                             />
                                         </Form.Group>
                                         <Form.Group controlId="ratePerDay">
@@ -140,15 +144,16 @@ function UpdateBike() {
                                                 name="ratePerDay"
                                                 value={rentalRate.ratePerDay}
                                                 onChange={handleRentalRateChange}
+                                                placeholder="Enter rate per day"
                                             />
                                         </Form.Group>
 
                                         <Button
                                             variant="primary"
                                             onClick={updateBike}
-                                            className="mt-2"
+                                            className="d-flex align-items-center mt-2"
                                         >
-                                            Update Bike
+                                            <FaUpload className="me-2" /> Update Bike
                                         </Button>
                                     </Form>
                                 </Col>
@@ -158,7 +163,7 @@ function UpdateBike() {
                 </Col>
             </Row>
 
-            <Modal show={showModal} onHide={handleCloseModal} size="lg">
+            <Modal show={showModal} onHide={handleCloseModal} size="lg" animation={true}>
                 <Modal.Header closeButton>
                     <Modal.Title>Document View</Modal.Title>
                 </Modal.Header>
@@ -167,20 +172,21 @@ function UpdateBike() {
                         <img
                             src={modalContent.src}
                             alt="Document"
-                            style={{ width: '100%', height: 'auto' }}
+                            className="img-fluid"
                         />
                     )}
                     {modalContent.type.startsWith('video') && (
                         <video
                             controls
                             src={modalContent.src}
-                            style={{ width: '100%', height: 'auto' }}
+                            className="w-100"
                         />
                     )}
                     {modalContent.type.startsWith('application/pdf') && (
                         <iframe
                             src={modalContent.src}
-                            style={{ width: '100%', height: '500px' }}
+                            className="w-100"
+                            style={{ height: '500px' }}
                             frameBorder="0"
                         />
                     )}
@@ -189,8 +195,8 @@ function UpdateBike() {
                     )}
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseModal}>
-                        Close
+                    <Button variant="secondary" onClick={handleCloseModal} className="d-flex align-items-center">
+                        <AiOutlineClose className="me-2" /> Close
                     </Button>
                 </Modal.Footer>
             </Modal>

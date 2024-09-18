@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { Form, Button, Container, Alert, InputGroup } from 'react-bootstrap';
 import { Person, Envelope, CheckCircle, XCircle } from 'react-bootstrap-icons';
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
 
 function AddStaff() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -22,6 +25,11 @@ function AddStaff() {
       setError('');
       setName('');
       setEmail('');
+      await Swal.fire({
+        title: "Staff Added",
+        icon: "success"
+      });
+      navigate("/staffs")
     } catch (err) {
       setError(err.response?.data?.message || 'An error occurred');
       setSuccess(false);

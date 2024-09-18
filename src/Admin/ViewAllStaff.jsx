@@ -68,7 +68,7 @@ function ViewAllStaff() {
                                 <th>Age</th>
                                 <th>DOB</th>
                                 <th>Address</th>
-                                <th>Actions</th>
+                                {/* <th>Actions</th> */}
                             </tr>
                         </thead>
                         <tbody>
@@ -81,11 +81,11 @@ function ViewAllStaff() {
                                     <td>{staffMember.age}</td>
                                     <td>{staffMember.dob}</td>
                                     <td>{staffMember.address}</td>
-                                    <td>
+                                    {/* <td>
                                         <Button variant="danger" onClick={() => handleDelete(staffMember.id)}>
                                             Delete
                                         </Button>
-                                    </td>
+                                    </td> */}
                                 </tr>
                             ))}
                         </tbody>

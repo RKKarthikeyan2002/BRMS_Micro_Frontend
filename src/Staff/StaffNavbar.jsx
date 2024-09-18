@@ -27,14 +27,13 @@ function StaffNavbar() {
     ];
 
     const handleLogout = () => {
-        // Clear session storage and redirect to login
         sessionStorage.removeItem('staffId');
         navigate('/');
     };
 
     return (
         <nav className="bg-gradient-to-r sticky top-0 z-50 from-blue-500 to-indigo-600 text-white shadow-lg">
-            <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="container mx-auto px-4 py-3 flex items-center justify-between">
                 <div className="text-lg font-semibold">R K BIKES</div>
                 <button 
                     className="md:hidden p-2 rounded-md hover:bg-white hover:bg-opacity-10 transition"

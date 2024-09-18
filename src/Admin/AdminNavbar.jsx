@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { FaBars, FaTimes, FaUserCircle, FaSignOutAlt, FaPhoneAlt, FaUser } from 'react-icons/fa';
+import { FaBars, FaTimes, FaUserCircle, FaSignOutAlt, FaPhoneAlt, FaUser, FaClipboardList } from 'react-icons/fa';
 import { IoMdLogIn } from 'react-icons/io';
 import { HiOutlineLogin } from 'react-icons/hi';
 import { Link, useNavigate } from 'react-router-dom';
 import { TbMotorbike } from 'react-icons/tb';
 import { PiPersonSimpleBikeBold } from 'react-icons/pi';
+import { BsFillPersonPlusFill } from 'react-icons/bs';
 
 function AdminNavbar() {
     const [isOpen, setIsOpen] = useState(false);
@@ -22,20 +23,19 @@ function AdminNavbar() {
       }, []);
 
     const navigation = [
-        { title: "Staff", path: "/staffs", icon: <TbMotorbike /> },
-        { title: "Booking Request", path: "/adminBookingRequests", icon: <FaPhoneAlt /> },
-        { title: "Rented Bikes", path: "/rented-bikes", icon: <PiPersonSimpleBikeBold className="inline-block mr-2" /> },
+        { title: "Staff", path: "/staffs", icon: <BsFillPersonPlusFill /> },
+        { title: "Booking Request", path: "/adminBookingRequests", icon: <FaClipboardList /> },
+        // { title: "Rented Bikes", path: "/rented-bikes", icon: <PiPersonSimpleBikeBold className="inline-block mr-2" /> },
     ];
 
     const handleLogout = () => {
-        // Clear session storage and redirect to login
         sessionStorage.removeItem('adminId');
         navigate('/');
     };
 
     return (
         <nav className="bg-gradient-to-r sticky top-0 z-50 from-blue-500 to-indigo-600 text-white shadow-lg">
-            <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div className="container mx-auto px-4 py-3 flex items-center justify-between">
                 <div className="text-lg font-semibold">R K BIKES</div>
                 <button 
                     className="md:hidden p-2 rounded-md hover:bg-white hover:bg-opacity-10 transition"

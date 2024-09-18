@@ -30,9 +30,9 @@ const Login = () => {
         if (Object.keys(formErrors).length > 0) {
             setErrors(formErrors);
         } 
-        // else if (!captchaToken) {
-        //     setError('Please complete the CAPTCHA');
-        // } 
+        else if (!captchaToken) {
+            setError('Please complete the CAPTCHA');
+        } 
         else {
             setErrors({});
             try {
@@ -83,7 +83,6 @@ const Login = () => {
 
                 {success && <p className="text-center text-green-500 mb-4">{success}</p>}
                 
-
                 <form
                     action="#"
                     onSubmit={handleSubmit}
@@ -128,13 +127,13 @@ const Login = () => {
                         {errors.password && <p className="text-red-500 text-sm mt-1">{errors.password}</p>}
                     </div>
 
-                    {/* <div className="my-4">
+                    <div className="my-4">
                         <ReCAPTCHA
                             sitekey="6LdknzwqAAAAABy_UieQEtRMLqfZUVV1qIvkY7wd"
                             onChange={handleCaptchaChange}
                         />
                         {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
-                    </div> */}
+                    </div>
 
                     <motion.button
                         type="submit"
